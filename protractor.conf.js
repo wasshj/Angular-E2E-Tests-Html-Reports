@@ -1,45 +1,48 @@
-// Protractor configuration file, see link for more information
-// https://github.com/angular/protractor/blob/master/lib/config.ts
-
-const { SpecReporter } = require('jasmine-spec-reporter');
-
 exports.config = {
-  allScriptsTimeout: 11000,
-  specs: [
-    'e2e/**/*.e2e-spec.ts'
-  ],
+  directConnect: true ,
   capabilities: {
     browserName: 'chrome',
     chromeOptions: {
-      args: (process.env.IS_CIRCLE ? ['--headless'] : [])
+      args: (['--headless']) 
     }
   },
-  directConnect: !process.env.IS_JENKINS,
   baseUrl: 'https://testing-angular-applications.github.io',
-
-  // Jasmine
-  framework: 'jasmine',
-  jasmineNodeOpts: {
-    showColors: true,
-    defaultTimeoutInterval: 30000,
-    print: function() {}
-  },
-  onPrepare: ()=> {
-    if (process.env.IS_JENKINS) {
+  specs: ['e2e/**/*.e2e-spec.ts'],
+  onPrepare: () => {
       let jasmineReporters = require('jasmine-reporters');
       let junitReporter = new jasmineReporters.JUnitXmlReporter({
         savePath: 'output/',
         consolidateAll: false
       });
       jasmine.getEnv().addReporter(junitReporter);
-    } else {
-      let specReporter = new SpecReporter({
-        spec: { displayStacktrace: true }
-      });
-      jasmine.getEnv().addReporter(specReporter);
-    }
     require('ts-node').register({
-      project: 'e2e/tsconfig.json'
+      project: 'e2e'
     });
-  }
+
+  },
+  onComplete: function() {
+     var browserName, browserVersion;
+     var capsPromise = browser.getCapabilities();
+ 
+     capsPromise.then(function (caps) {
+        browserName = caps.get('browserName');
+        browserVersion = caps.get('version');
+        platform = caps.get('platform');
+ 
+        var HTMLReport = require('protractor-html-reporter-2');
+ 
+        testConfig = {
+            reportTitle: 'Protractor Test Execution Report',
+            outputPath: 'output/',
+            outputFilename: 'ProtractorTestReport',
+            screenshotPath: './screenshots',
+            testBrowser: browserName,
+            browserVersion: browserVersion,
+            modifiedSuiteName: false,
+            screenshotsOnlyOnFailure: true,
+            testPlatform: platform
+        };
+        new HTMLReport().from('output/*.xml', testConfig);
+    });
+ }
 };
