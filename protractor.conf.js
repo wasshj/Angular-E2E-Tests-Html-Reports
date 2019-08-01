@@ -42,7 +42,7 @@ exports.config = {
             screenshotsOnlyOnFailure: true,
             testPlatform: platform
         };
-        new HTMLReport().from('output/*.xml', testConfig);
+        new HTMLReport().from('output/junitresults-testaddingafavorite.xml', testConfig);
     });
  }
 };
