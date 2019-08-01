@@ -43,6 +43,7 @@ exports.config = {
             testPlatform: platform
         };
         new HTMLReport().from('output/junitresults-testaddingafavorite.xml', testConfig);
+        new HTMLReport().from('output/junitresults-testeditacontact.xml', testConfig);
     });
  }
 };
